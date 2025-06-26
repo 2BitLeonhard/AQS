@@ -1,7 +1,7 @@
 # .github/workflows/ci.yml
+
 name: Pipeline de CI - Backend e Frontend
 
-# Gatilhos: roda em todo push ou pull request para a branch main
 on:
   push:
     branches: [ main ]
@@ -11,10 +11,7 @@ on:
 jobs:
   # Job para testar o backend
   test-backend:
-    runs-on: ubuntu-latest # Roda numa máquina virtual Linux
-    defaults:
-      run:
-        working-directory: ./agendamento-api # Define o diretório de trabalho
+    runs-on: ubuntu-latest
     steps:
       - name: 1. Checkout do código
         uses: actions/checkout@v3
@@ -24,18 +21,17 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 3. Instalar dependências
-        run: npm install
+      - name: 3. Instalar dependências do Backend
+        # A correção está aqui: entramos na pasta antes de rodar o npm
+        run: cd agendamento-api && npm install
 
-      - name: 4. Rodar testes de unidade
-        run: npm test
+      - name: 4. Rodar testes do Backend
+        # E aqui também
+        run: cd agendamento-api && npm test
 
   # Job para analisar o frontend
   lint-frontend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend # Define o diretório de trabalho
     steps:
       - name: 1. Checkout do código
         uses: actions/checkout@v3
@@ -45,8 +41,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 3. Instalar dependências
-        run: npm install
+      - name: 3. Instalar dependências do Frontend
+        # A mesma correção para o frontend
+        run: cd frontend && npm install
 
-      - name: 4. Rodar análise estática (lint)
-        run: npm run lint
+      - name: 4. Rodar análise estática do Frontend
+        # E aqui
+        run: cd frontend && npm run lint
